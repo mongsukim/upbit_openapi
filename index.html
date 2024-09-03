@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="c3.css" rel="stylesheet">
+    <script src="c3.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <title>Upbit API Response</title>
+</head>
+<body>
+
+    <div id="chart"></div>
+
+
+<!-- 
+    <h1>Upbit API Response</h1>
+    <pre id="response"></pre> -->
+
+    <script>
+        // 서버로 요청을 보내고 응답을 받는 코드
+        // fetch('http://localhost:3000/market')
+        //     .then(response => response.json())  // 응답을 JSON으로 변환
+        //     .then(data => {
+        //         document.getElementById('response').textContent = JSON.stringify(data, null, 2);  // JSON 데이터를 포맷하여 표시
+        //     })
+        //     .catch(error => {
+        //         console.error('Error fetching data:', error);
+        //         document.getElementById('response').textContent = 'Error fetching data';
+        //     });
+
+  
+        function MarketCoincandles(market,coin,timeVal,count){
+  const request = new XMLHttpRequest();
+  const url = 'https://api.upbit.com/v1/candles/minutes/'+timeVal+'?market='+market+'-'+coin+'&count='+count;
+  
+  request.open("GET", url, false);
+  request.send();
+  var obj = JSON.parse(request.responseText);
+  
+  
+  var high_price = ["high_price"];
+  var low_price = ["low_price"];
+  var trade_price = ["trade_price"];
+  var opening_price = ["opening_price"];
+  var candle_date_time_kst = ["candle_date_time_kst"];
+
+  for(var i=obj.length-1; i>=0; i--) {
+    high_price.push(obj[i].high_price);
+    low_price.push(obj[i].low_price);
+    trade_price.push(obj[i].trade_price);
+    opening_price.push(obj[i].opening_price);
+   
+  }
+ 
+  render(high_price,low_price,trade_price,opening_price);
+
+ }
+
+
+function render(high_price,low_price,trade_price,opening_price){
+  var chart = c3.generate({
+    bindto: '#chart',
+    data: {
+      columns: [
+        high_price,
+        low_price,
+        trade_price,
+        opening_price
+
+      ],
+      type: 'spline'
+      
+    }
+  });
+}
+
+MarketCoincandles('KRW','STEEM',30,30);
+
+
+    </script>
+
+
+<script type="module" src="script.js"></script>
+
+</body>
+</html>
